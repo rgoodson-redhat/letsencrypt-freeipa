@@ -110,6 +110,7 @@ if [[ ${REPLY} =~ ^[Yy]$ ]]; then
     ipa service-allow-retrieve-keytab "lets-encrypt/${host}@${realm}" --groups=${group}
     ipa-getkeytab -p "lets-encrypt/${host}" -k /etc/lets-encrypt.keytab #add -r to renew
 
+# Replace with Google DNS integration
     for principal in ${principals} ; do
         ipa dnsrecord-add "${principal#[a-zA-Z0-9\-\_]*\.}." "_acme-challenge.${principal}." --txt-rec='INITIALIZED'
     done

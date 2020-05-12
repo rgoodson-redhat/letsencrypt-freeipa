@@ -122,7 +122,7 @@ if [[ ! -e /etc/lets-encrypt.keytab ]]; then
 fi
 
 if ! kinit -k -t /etc/lets-encrypt.keytab "lets-encrypt/${host}"; then
-    errcho "FATAL: Could not kinit (RC=$?); exiting!!!" 
+    errcho "FATAL: Could not kinit (RC=$?); exiting!!!"
     exit 1
 fi
 
@@ -176,6 +176,7 @@ fi
 auth_hook="${AUTH_HOOK:-${default_auth_hook}}"
 
 # Apply for a new cert using CertBot with DNS verification
+# Update for Google DNS integration
 certbot certonly --quiet \
                  --manual \
                  --preferred-challenges dns \

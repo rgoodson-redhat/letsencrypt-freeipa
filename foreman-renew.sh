@@ -9,6 +9,7 @@ kct_dir="/etc/pki/katello-certs-tools"
 k_dir="/etc/pki/katello"
 
 # Get new certificate
+# Update to point to Google DNS integration
 certbot certonly --manual \
                  --preferred-challenges dns \
                  --manual-public-ip-logging-ok \
