@@ -57,7 +57,7 @@ if [[ ${REPLY} =~ ^[Yy]$ ]]; then
     umask 0002
 # update to point to my repo
     wget https://raw.githubusercontent.com/rgoodson-redhat/letsencrypt-freeipa/master/register.sh -O - | bash
-    wget https://raw.githubusercontent.com/rgoodson-redhat/letsencrypt-freeipa/master/renew.sh -O "${destination}"
+    #wget https://raw.githubusercontent.com/rgoodson-redhat/letsencrypt-freeipa/master/renew.sh -O "${destination}"
     chown root:root "${destination}"
     chmod 0700 "${destination}"
     umask "${old_umask}"

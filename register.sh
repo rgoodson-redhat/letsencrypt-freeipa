@@ -98,7 +98,7 @@ if [[ ${REPLY} =~ ^[Yy]$ ]]; then
     if [ "${EUID}" -ne 0 ] && ${interactive} ; then
         bash -c "export KRB5CCNAME='${KRB5CCNAME:-}' && ipa-certupdate -v"
     else
-        ipa-certupdate
+        ipa-certupdate -v
     fi
 
     yum -y install certbot python2-certbot-dns-google
