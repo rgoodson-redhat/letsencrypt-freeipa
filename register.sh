@@ -96,7 +96,7 @@ if [[ ${REPLY} =~ ^[Yy]$ ]]; then
     wget https://letsencrypt.org/certs/isrgrootx1.pem | sudo ipa-cacert-manage install isrgrootx1.pem -n ISRGRootCAX1 -t C,,
     wget https://letsencrypt.org/certs/letsencryptauthorityx3.pem | sudo ipa-cacert-manage install letsencryptauthorityx3.pem -n ISRGRootCAX3 -t C,,
     if [ "${EUID}" -ne 0 ] && ${interactive} ; then
-        sudo bash -c "export KRB5CCNAME='${KRB5CCNAME:-}' && ipa-certupdate -v"
+        bash -c "export KRB5CCNAME='${KRB5CCNAME:-}' && ipa-certupdate -v"
     else
         ipa-certupdate
     fi
