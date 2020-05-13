@@ -101,7 +101,7 @@ if [[ ${REPLY} =~ ^[Yy]$ ]]; then
         ipa-certupdate
     fi
 
-    sudo yum -y install certbot || sudo apt-get -y install certbot
+    yum -y install certbot python2-certbot-dns-google
     ipa service-add "lets-encrypt/${host}@${realm}"
     ipa role-add "DNS Administrator"
     ipa role-add-privilege "DNS Administrator" --privileges="DNS Administrators"
@@ -110,15 +110,15 @@ if [[ ${REPLY} =~ ^[Yy]$ ]]; then
     ipa service-allow-retrieve-keytab "lets-encrypt/${host}@${realm}" --groups=${group}
     ipa-getkeytab -p "lets-encrypt/${host}" -k /etc/lets-encrypt.keytab #add -r to renew
 
-# Replace with Google DNS integration
-    for principal in ${principals} ; do
-        ipa dnsrecord-add "${principal#[a-zA-Z0-9\-\_]*\.}." "_acme-challenge.${principal}." --txt-rec='INITIALIZED'
-    done
+# Comment out for now, since no need to update IPA DNS. May need to replace with loop to iterate through exisitng principals and request replacements certs.
+#    for principal in ${principals} ; do
+#        ipa dnsrecord-add "${principal#[a-zA-Z0-9\-\_]*\.}." "_acme-challenge.${principal}." --txt-rec='INITIALIZED'
+#    done
 
     # Apply for the initial certificate if script is available
     renew_script_path="$(dirname "${0}")/renew.sh"
     if [ -f "${renew_script_path}" ] ; then
-        sudo bash -c "${renew_script_path}"
+        "${renew_script_path}"
     fi
 else
     echo "Let's Encrypt registration cancelled by user"

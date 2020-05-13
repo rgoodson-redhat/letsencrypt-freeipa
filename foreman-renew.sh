@@ -9,14 +9,10 @@ kct_dir="/etc/pki/katello-certs-tools"
 k_dir="/etc/pki/katello"
 
 # Get new certificate
-# Update to point to Google DNS integration
-certbot certonly --manual \
-                 --preferred-challenges dns \
-                 --manual-public-ip-logging-ok \
-                 --manual-auth-hook 'ipa dnsrecord-mod ${CERTBOT_DOMAIN#*.}. _acme-challenge.${CERTBOT_DOMAIN}. --txt-rec=${CERTBOT_VALIDATION}' \
+certbot certonly --dns-google \
+                 --dns-google-credentials "/etc/letsencrypt/google.json" \
                  -d "${host}" \
                  --agree-tos \
-                 --email "support@sdelements.com" \
                  --expand \
                  -n
 

@@ -136,57 +136,58 @@ fi
 domain_args="$(ipa host-show ${host} --raw | sed --quiet --expression 's/^[[:space:]]*krbprincipalname:[[:space:]]*host\/\(.*\)@'${realm}'[[:space:]]*$/-d \1/p')"
 
 #Calculate additional arguments to pass to certbot
-soa_record="$(dig SOA ${dns_domain_name} + short | grep ^${dns_domain_name}. | grep 'SOA' | awk '{print $6}')"
-hostmaster="${soa_record/\./@}"
-email="${email:-${hostmaster%\.}}"
+#Flagged for removal
+#soa_record="$(dig SOA ${dns_domain_name} + short | grep ^${dns_domain_name}. | grep 'SOA' | awk '{print $6}')"
+#hostmaster="${soa_record/\./@}"
+#email="${email:-${hostmaster%\.}}"
 
 #Probably should do some kind of validataion on
 #the above calculated values
 
 # Configure the manual auth hook
 # shellcheck disable=2016
-default_auth_hook='ipa dnsrecord-mod ${CERTBOT_DOMAIN#*.}. _acme-challenge.${CERTBOT_DOMAIN}. --txt-rec=${CERTBOT_VALIDATION}'
+# Flagged for removal
+#default_auth_hook='ipa dnsrecord-mod ${CERTBOT_DOMAIN#*.}. _acme-challenge.${CERTBOT_DOMAIN}. --txt-rec=${CERTBOT_VALIDATION}'
 
 # Configure alternative nsupdate hook
-nsupdate_auth_server="${NSUPDATE_AUTH_SERVER:-$(nslookup -type=soa "${dns_domain_name}"  | grep 'origin =' | sed -e 's/[[:space:]]*origin = //')}"
+# Flagged for removal
+#nsupdate_auth_server="${NSUPDATE_AUTH_SERVER:-$(nslookup -type=soa "${dns_domain_name}"  | grep 'origin =' | sed -e 's/[[:space:]]*origin = //')}"
 #shellcheck disable=2016
-nsupdate_commands=(
-    "server ${nsupdate_auth_server}"
-    'update delete _acme-challenge.${CERTBOT_DOMAIN} TXT'
-    'update add _acme-challenge.${CERTBOT_DOMAIN} 320 IN TXT "${CERTBOT_VALIDATION}'
-    'send'
-)
-nsupdate_key_name="${NSUPDATE_KEY_NAME:-}"
-nsupdate_key_secret="${NSUPDATE_KEY_SECRET:-}"
-nsupdate_key_file="${NSUPDATE_KEY_FILE:-}"
-nsupdate_auth_hook='printf "%s\n" '"${nsupdate_commands[*]} | nsupdate -v"
+#nsupdate_commands=(
+#    "server ${nsupdate_auth_server}"
+#    'update delete _acme-challenge.${CERTBOT_DOMAIN} TXT'
+#    'update add _acme-challenge.${CERTBOT_DOMAIN} 320 IN TXT "${CERTBOT_VALIDATION}'
+#    'send'
+#)
+#nsupdate_key_name="${NSUPDATE_KEY_NAME:-}"
+#nsupdate_key_secret="${NSUPDATE_KEY_SECRET:-}"
+#nsupdate_key_file="${NSUPDATE_KEY_FILE:-}"
+#nsupdate_auth_hook='printf "%s\n" '"${nsupdate_commands[*]} | nsupdate -v"
 # Prefer key file but also accept key_name/secret combo
-if [ -n "${nsupdate_key_file}" ] ; then
-    if [ -e "${nsupdate_key_file}" ] ; then
-        default_auth_hook="${nsupdate_auth_hook} -k ${nsupdate_key_file}"
-    else
-        echo "Specified nsupdate key file ${nsupdate_key_file} does not exist, exiting!"
-        exit 1
-    fi
-elif [ -n "${nsupdate_key_name}" ] && [ -n "${nsupdate_key_secret}" ] ; then
-    default_auth_hook="${nsupdate_auth_hook} -y ${nsupdate_key_name}:${nsupdate_key_secret}"
-fi
+#if [ -n "${nsupdate_key_file}" ] ; then
+#    if [ -e "${nsupdate_key_file}" ] ; then
+#        default_auth_hook="${nsupdate_auth_hook} -k ${nsupdate_key_file}"
+#    else
+#        echo "Specified nsupdate key file ${nsupdate_key_file} does not exist, exiting!"
+#        exit 1
+#    fi
+#elif [ -n "${nsupdate_key_name}" ] && [ -n "${nsupdate_key_secret}" ] ; then
+#    default_auth_hook="${nsupdate_auth_hook} -y ${nsupdate_key_name}:${nsupdate_key_secret}"
+#fi
 
 # Set the auth hook
-auth_hook="${AUTH_HOOK:-${default_auth_hook}}"
+# Flagged for removal
+#auth_hook="${AUTH_HOOK:-${default_auth_hook}}"
 
 # Apply for a new cert using CertBot with DNS verification
 # Update for Google DNS integration
 certbot certonly --quiet \
-                 --manual \
-                 --preferred-challenges dns \
-                 --manual-public-ip-logging-ok \
-                 --manual-auth-hook "${auth_hook}" \
-                 ${domain_args} \
+                 --dns-google \
+                 --dns-google-credentials "/etc/letsencrypt/google.json" \
                  --agree-tos \
-                 --email "${email}" \
                  --expand \
-                 --noninteractive
+                 --noninteractive \
+                 -d "{$domain_args}"
 
 #Search for directory containing updated privkey.pem
 #Note, this used to be calculated before the certbot command was executed
