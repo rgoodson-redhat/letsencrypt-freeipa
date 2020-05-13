@@ -80,7 +80,7 @@ if ${interactive} ; then
 	echo
 
 	# Get a fresh kerberos ticket if needed
-        klist || ( [ "${EUID:-$(id -u)}" -eq 0 ] && kinit "${SUDO_USER:-${USER}}" ) || kinit
+        klist || ( [ "${EUID:-$(id -u)}" -eq 0 ] && kinit "${SUDO_USER:-admin}" ) || kinit
     done
 else
     REPLY="y"
