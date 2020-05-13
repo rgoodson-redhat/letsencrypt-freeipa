@@ -13,6 +13,7 @@ certbot certonly --dns-google \
                  --dns-google-credentials "/etc/letsencrypt/google.json" \
                  -d "${host}" \
                  --agree-tos \
+                 --email desertgeek13@gmail.com \
                  --expand \
                  -n
 
