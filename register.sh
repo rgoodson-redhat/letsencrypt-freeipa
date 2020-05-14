@@ -93,18 +93,18 @@ if [[ ${REPLY} =~ ^[Yy]$ ]]; then
     # shellcheck disable=2154
     principals="$(ipa host-show "${host}" --raw | grep krbprincipalname | grep 'host/' | sed 's.krbprincipalname: host/..' | sed s/"@${realm}"//)"
 
-    wget https://letsencrypt.org/certs/isrgrootx1.pem | ipa-cacert-manage install isrgrootx1.pem -n ISRGRootCAX1 -t C,,
-    wget https://letsencrypt.org/certs/letsencryptauthorityx3.pem | ipa-cacert-manage install letsencryptauthorityx3.pem -n ISRGRootCAX3 -t C,,
-    if [ "${EUID}" -ne 0 ] && ${interactive} ; then
-        bash -c "export KRB5CCNAME='${KRB5CCNAME:-}' && ipa-certupdate -v"
-    else
-        ipa-certupdate -v
-    fi
+#    wget https://letsencrypt.org/certs/isrgrootx1.pem | ipa-cacert-manage install isrgrootx1.pem -n ISRGRootCAX1 -t C,,
+#    wget https://letsencrypt.org/certs/letsencryptauthorityx3.pem | ipa-cacert-manage install letsencryptauthorityx3.pem -n ISRGRootCAX3 -t C,,
+#    if [ "${EUID}" -ne 0 ] && ${interactive} ; then
+#        bash -c "export KRB5CCNAME='${KRB5CCNAME:-}' && ipa-certupdate -v"
+#    else
+#        ipa-certupdate -v
+#    fi
 
-    yum -y install certbot python2-certbot-dns-google
+#    yum -y install certbot python2-certbot-dns-google
     ipa service-add "lets-encrypt/${host}@${realm}"
-    ipa role-add "DNS Administrator"
-    ipa role-add-privilege "DNS Administrator" --privileges="DNS Administrators"
+#    ipa role-add "DNS Administrator"
+#    ipa role-add-privilege "DNS Administrator" --privileges="DNS Administrators"
     ipa role-add-member "DNS Administrator" --services="lets-encrypt/${host}@${realm}"
     ipa service-allow-create-keytab "lets-encrypt/${host}@${realm}" --groups=${group}
     ipa service-allow-retrieve-keytab "lets-encrypt/${host}@${realm}" --groups=${group}
